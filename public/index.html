@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Land Record & Property Registration Platform</title>
+  <meta name="description" content="Enterprise-grade Digital Land Registry Platform featuring automated fraud audit, property registration, title certificate issuance, and spatial cadastral ledger." />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- Demo Quick Switcher Banner -->
+  <div class="demo-banner">
+    <div>
+      ⚡ <strong>Interactive Demo Mode:</strong> Test Citizen & Admin Portal features instantaneously.
+    </div>
+    <div class="demo-actions">
+      <button id="demo-user-btn" class="demo-chip">🔑 Login as Citizen (Rajesh)</button>
+      <button id="demo-admin-btn" class="demo-chip" style="border-color:var(--accent-purple); color:#c084fc;">🛡️ Login as Admin Inspector</button>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-logo">🌐</div>
+      <span>GeoLand <span style="font-size:0.8rem; font-weight:500; color:var(--accent-secondary); text-transform:uppercase; letter-spacing:1px;">Registry</span></span>
+    </div>
+
+    <ul class="nav-links">
+      <li><button id="nav-landing-btn" class="nav-btn nav-btn-ghost">Home</button></li>
+      <li><button id="nav-ledger-btn" class="nav-btn nav-btn-ghost">Title Ledger Search</button></li>
+      <li><button id="nav-dash-btn" class="nav-btn nav-btn-primary" style="display:none;">Dashboard</button></li>
+      <li><button id="nav-register-prop-btn" class="nav-btn nav-btn-accent" style="display:none;">+ Register Property</button></li>
+      <li><button id="nav-login-btn" class="nav-btn nav-btn-primary">Sign In / Register</button></li>
+      <li id="user-badge-container" class="user-badge" style="display:none;"></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+
+    <!-- ==========================================
+         VIEW 1: LANDING PAGE
+         ========================================== -->
+    <section id="view-landing" class="view-section active">
+      <div class="hero-section">
+        <div>
+          <h1 class="hero-title">
+            Digital <span>Land Records</span> & Fraud-Proof Property Registration
+          </h1>
+          <p class="hero-subtitle">
+            Next-generation national cadastral registry engine. Empowers citizens to verify owned titles, apply for seamless digital property transfers, and automated AI boundary conflict & fraud risk analysis.
+          </p>
+
+          <div style="display:flex; gap:1rem;">
+            <button class="btn btn-primary" onclick="openModal('auth-modal')">Get Started / Sign In</button>
+            <button class="btn btn-secondary" onclick="switchView('ledger-search')">🔍 Search Public Land Ledger</button>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-box">
+              <div id="landing-stat-count" class="stat-number">24,800+</div>
+              <div class="stat-label">Verified Deeds</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" style="color:var(--accent-success);">99.9%</div>
+              <div class="stat-label">Fraud Prevention</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" style="color:var(--accent-purple);">&lt; 48 Hrs</div>
+              <div class="stat-label">Approval Turnaround</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:1rem;">
+          <div class="card-header">
+            <h3 style="font-size:1rem;">Live Cadastral Spatial Map</h3>
+            <span class="badge badge-info">Real-time Polygon Registry</span>
+          </div>
+          <div class="map-box">
+            <canvas id="landing-map-canvas" class="map-canvas"></canvas>
+            <div class="map-legend">
+              <div class="legend-item"><div class="legend-color" style="background:#10b981;"></div> Registered Parcel</div>
+              <div class="legend-item"><div class="legend-color" style="background:#f59e0b;"></div> Pending Application</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Cards Grid -->
+      <div class="grid-3" style="margin-top:3rem;">
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:0.8rem;">📜</div>
+          <h3>Digital Title Deed Verification</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.4rem;">
+            Instantly view digital certificates, tax validity status, and ownership lineage for any verified property record.
+          </p>
+        </div>
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:0.8rem;">🛡️</div>
+          <h3>AI/Algorithmic Fraud Audit</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.4rem;">
+            Automated spatial boundary overlap checks, seller identity verification, and benchmark market pricing anomaly detection.
+          </p>
+        </div>
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:0.8rem;">📑</div>
+          <h3>End-to-End Registration Workflow</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.4rem;">
+            Step-by-step citizen registration wizard supporting ID proof uploads, cadastral survey maps, and automated inspector routing.
+          </p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================
+         VIEW 2: CITIZEN PORTAL DASHBOARD
+         ========================================== -->
+    <section id="view-citizen-dash" class="view-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+        <div>
+          <h2>Citizen Property Portal</h2>
+          <p style="color:var(--text-muted); font-size:0.9rem;">Manage your verified land deeds and track property registration applications.</p>
+        </div>
+        <button class="btn btn-primary" onclick="switchView('register-property')">+ Apply for New Property Title</button>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:2rem;">
+        <!-- Spatial Map for Citizen -->
+        <div class="card">
+          <div class="card-header">
+            <h3>My Spatial Land Boundaries</h3>
+            <span class="badge badge-success">GPS Cadastral Sync</span>
+          </div>
+          <div class="map-box" style="height:300px;">
+            <canvas id="citizen-map-canvas" class="map-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Property Summary Stats -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Account Summary</h3>
+            <span class="badge badge-info">Verified Citizen</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+            <div style="background:rgba(15,23,42,0.6); padding:1rem; border-radius:var(--radius-sm);">
+              <span style="font-size:0.8rem; color:var(--text-muted);">Registered Properties</span>
+              <div style="font-size:1.8rem; font-weight:800; color:var(--accent-secondary);" id="citizen-stat-lands">--</div>
+            </div>
+            <div style="background:rgba(15,23,42,0.6); padding:1rem; border-radius:var(--radius-sm);">
+              <span style="font-size:0.8rem; color:var(--text-muted);">Active Applications</span>
+              <div style="font-size:1.8rem; font-weight:800; color:var(--accent-warning);" id="citizen-stat-apps">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Registered Land Titles -->
+      <div style="margin-bottom:2.5rem;">
+        <h3 style="margin-bottom:1rem;">Verified Property Titles</h3>
+        <div id="my-lands-grid" class="grid-3">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- My Registration Applications -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Submitted Property Registration Applications</h3>
+          <span class="badge badge-info">Real-time Tracker</span>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Property Title & District</th>
+                <th>Area</th>
+                <th>Valuation</th>
+                <th>Status</th>
+                <th>Submitted Date</th>
+              </tr>
+            </thead>
+            <tbody id="my-apps-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================
+         VIEW 3: ADMIN & FRAUD VERIFICATION PORTAL
+         ========================================== -->
+    <section id="view-admin-dash" class="view-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+        <div>
+          <h2>Land Registry Audit & Verification Portal</h2>
+          <p style="color:var(--text-muted); font-size:0.9rem;">Central Bureau Inspector Access — Fraud Detection & Registration Approvals.</p>
+        </div>
+        <span class="badge badge-danger" style="padding:0.5rem 1rem;">Inspector Role Active</span>
+      </div>
+
+      <!-- Admin Overview Stats -->
+      <div class="grid-3" style="margin-bottom:2rem;">
+        <div class="card">
+          <span style="font-size:0.85rem; color:var(--text-muted);">Pending Verification Queue</span>
+          <div id="stat-pending-apps" class="stat-number" style="color:var(--accent-warning);">0</div>
+        </div>
+        <div class="card">
+          <span style="font-size:0.85rem; color:var(--text-muted);">Critical Fraud Risk Flags</span>
+          <div id="stat-fraud-flags" class="stat-number" style="color:var(--accent-danger);">0</div>
+        </div>
+        <div class="card">
+          <span style="font-size:0.85rem; color:var(--text-muted);">Total Registered Land Records</span>
+          <div id="stat-registered-lands" class="stat-number" style="color:var(--accent-success);">0</div>
+        </div>
+      </div>
+
+      <!-- Admin Spatial Plot Map -->
+      <div class="card" style="margin-bottom:2rem;">
+        <div class="card-header">
+          <h3>National Cadastral Map — Boundary Overlap & Discrepancy View</h3>
+          <span class="badge badge-warning">Spatial Audit Engine</span>
+        </div>
+        <div class="map-box">
+          <canvas id="admin-map-canvas" class="map-canvas"></canvas>
+          <div class="map-legend">
+            <div class="legend-item"><div class="legend-color" style="background:#10b981;"></div> Clear Registered Plot</div>
+            <div class="legend-item"><div class="legend-color" style="background:#ef4444;"></div> Flagged Overlap / Fraud Conflict</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications Inspection Queue Table -->
+      <div class="card" style="margin-bottom:2rem;">
+        <div class="card-header">
+          <h3>Property Registration Applications Queue</h3>
+          <span class="badge badge-info">Automated Fraud Scoring</span>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Applicant</th>
+                <th>Property Title</th>
+                <th>Valuation</th>
+                <th>AI Fraud Risk</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-apps-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Audit Logs Table -->
+      <div class="card">
+        <div class="card-header">
+          <h3>System Audit Trails & Ledger Logs</h3>
+          <span class="badge badge-info">Immutable History</span>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Action</th>
+                <th>Actor / User</th>
+                <th>Event Details</th>
+              </tr>
+            </thead>
+            <tbody id="admin-audit-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================
+         VIEW 4: NEW PROPERTY REGISTRATION WIZARD
+         ========================================== -->
+    <section id="view-register-property" class="view-section">
+      <div style="max-width:800px; margin:0 auto;">
+        <h2 style="margin-bottom:0.5rem; text-align:center;">New Property Title Registration</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem; text-align:center; margin-bottom:2rem;">
+          Complete the cadastral details and upload mandatory verification documents to apply for land title registration.
+        </p>
+
+        <!-- Wizard Step Indicator -->
+        <div class="wizard-steps">
+          <div id="step-node-1" class="step-node active">1</div>
+          <div id="step-node-2" class="step-node">2</div>
+          <div id="step-node-3" class="step-node">3</div>
+          <div id="step-node-4" class="step-node">4</div>
+        </div>
+
+        <form id="property-registration-form" class="card">
+          
+          <!-- STEP 1: Property Specifications -->
+          <div id="wizard-step-1" class="wizard-step-panel">
+            <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem;">Step 1: Property Specifications</h3>
+            
+            <div class="form-group">
+              <label class="form-label">Property Title / Name *</label>
+              <input type="text" id="reg-prop-title" class="form-input" placeholder="e.g. Meadow View Sector Plot #14" required />
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">District *</label>
+                <select id="reg-prop-district" class="form-select" required>
+                  <option value="Central Metropolitan">Central Metropolitan</option>
+                  <option value="North Hills District">North Hills District</option>
+                  <option value="South Ridge Sector">South Ridge Sector</option>
+                  <option value="East Industrial Hub">East Industrial Hub</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Sector / Phase *</label>
+                <input type="text" id="reg-prop-sector" class="form-input" placeholder="e.g. Sector 3" required />
+              </div>
+            </div>
+
+            <div class="grid-3">
+              <div class="form-group">
+                <label class="form-label">Total Area (Sq. Ft) *</label>
+                <input type="number" id="reg-prop-area" class="form-input" placeholder="1800" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Zoning Classification *</label>
+                <select id="reg-prop-zone" class="form-select">
+                  <option value="Residential">Residential</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Agricultural">Agricultural</option>
+                  <option value="Industrial">Industrial</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Proposed Valuation (USD $) *</label>
+                <input type="number" id="reg-prop-valuation" class="form-input" placeholder="140000" required />
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+              <button type="button" id="step-1-next" class="btn btn-primary">Next: Seller & Boundary Details →</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Seller Info & Coordinates -->
+          <div id="wizard-step-2" class="wizard-step-panel" style="display:none;">
+            <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem;">Step 2: Transferor / Seller & Spatial Data</h3>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Seller Full Name *</label>
+                <input type="text" id="reg-seller-name" class="form-input" placeholder="e.g. Anita Verma" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Seller National ID / Passport # *</label>
+                <input type="text" id="reg-seller-id" class="form-input" placeholder="e.g. AD-7766-5544-3322" required />
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:1rem;">
+              <label class="form-label">Cadastral Boundary Coordinates (GPS Grid Points)</label>
+              <div style="background:rgba(15,23,42,0.8); padding:0.8rem; border-radius:var(--radius-sm); font-family:monospace; font-size:0.85rem; color:var(--accent-secondary);">
+                [Point 1: (500, 60), Point 2: (620, 60), Point 3: (620, 160), Point 4: (500, 160)]
+              </div>
+              <small style="color:var(--text-muted); display:block; margin-top:0.3rem;">Boundary coordinates will be checked by the AI Fraud Engine against existing registered parcels.</small>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-top:1.5rem;">
+              <button type="button" id="step-2-prev" class="btn btn-secondary">← Back</button>
+              <button type="button" id="step-2-next" class="btn btn-primary">Next: Document Uploads →</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: Mandatory Document Uploads -->
+          <div id="wizard-step-3" class="wizard-step-panel" style="display:none;">
+            <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem;">Step 3: Document Verification Uploads</h3>
+
+            <div class="form-group">
+              <label class="form-label">1. Applicant Identity Proof (Aadhaar / Passport / SSN PDF)</label>
+              <input type="file" id="reg-doc-id" class="form-input" accept=".pdf,.png,.jpg" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">2. Sale Deed / Conveyance Deed Agreement (PDF)</label>
+              <input type="file" id="reg-doc-deed" class="form-input" accept=".pdf,.png,.jpg" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">3. Cadastral Survey Plan Map (PDF / Image)</label>
+              <input type="file" id="reg-doc-survey" class="form-input" accept=".pdf,.png,.jpg" />
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-top:1.5rem;">
+              <button type="button" id="step-3-prev" class="btn btn-secondary">← Back</button>
+              <button type="button" id="step-3-next" class="btn btn-primary">Next: Review Application →</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: Review & Final Submission -->
+          <div id="wizard-step-4" class="wizard-step-panel" style="display:none;">
+            <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem;">Step 4: Application Review & Submission</h3>
+
+            <div id="registration-review-box" style="margin-bottom:1.5rem;">
+              <!-- Populated dynamically -->
+            </div>
+
+            <div style="background:rgba(99,102,241,0.1); border:1px solid var(--border-highlight); padding:1rem; border-radius:var(--radius-sm); margin-bottom:1.5rem; font-size:0.85rem;">
+              ℹ️ <strong>Declaration:</strong> By submitting this application, you declare that all property specifications and documents are genuine. The application will undergo automated fraud analysis and inspection before title deed issuance.
+            </div>
+
+            <div style="display:flex; justify-content:space-between;">
+              <button type="button" id="step-4-prev" class="btn btn-secondary">← Back</button>
+              <button type="submit" class="btn btn-success">🚀 Submit Application to Central Registry</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+
+    <!-- ==========================================
+         VIEW 5: PUBLIC LAND LEDGER SEARCH
+         ========================================== -->
+    <section id="view-ledger-search" class="view-section">
+      <div style="margin-bottom:2rem;">
+        <h2>Public Land Registry Ledger</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem;">Search verified real property records by Unique PIN, Owner Name, District, or Title Deed reference.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:2rem;">
+        <div class="form-group" style="margin-bottom:0;">
+          <input type="text" id="ledger-search-input" class="form-input" placeholder="🔍 Search PIN (e.g. PIN-883920-A1), Owner Name (Rajesh), or Deed Ref..." style="font-size:1.1rem; padding:0.9rem;" />
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:2rem;">
+        <div class="card-header">
+          <h3>Public Cadastral Map View</h3>
+          <span class="badge badge-success">Open Access</span>
+        </div>
+        <div class="map-box">
+          <canvas id="public-map-canvas" class="map-canvas"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Registered Property Index</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Unique PIN</th>
+                <th>Property Title & District</th>
+                <th>Owner Name</th>
+                <th>Area</th>
+                <th>Valuation</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="public-ledger-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+       MODAL 1: AUTHENTICATION MODAL
+       ========================================== -->
+  <div id="auth-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('auth-modal')">&times;</button>
+
+      <div style="display:flex; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem;">
+        <button id="tab-login" class="nav-btn nav-btn-ghost active" style="font-size:1.1rem;">Sign In</button>
+        <button id="tab-register" class="nav-btn nav-btn-ghost" style="font-size:1.1rem;">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="user@land.gov" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Sign In</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="Citizen Name" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="citizen@email.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Role</label>
+          <select id="reg-role" class="form-select">
+            <option value="user">Citizen (Property Owner / Applicant)</option>
+            <option value="admin">Registry Inspector / Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">National ID / Aadhaar #</label>
+          <input type="text" id="reg-id-number" class="form-input" placeholder="AD-9876-5432-1098" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ==========================================
+       MODAL 2: APPLICATION AUDIT INSPECTOR MODAL
+       ========================================== -->
+  <div id="inspect-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:850px;">
+      <button class="modal-close" onclick="closeModal('inspect-modal')">&times;</button>
+      <div id="inspect-modal-body">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==========================================
+       MODAL 3: DIGITAL DEED CERTIFICATE MODAL
+       ========================================== -->
+  <div id="deed-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:700px;">
+      <button class="modal-close" onclick="closeModal('deed-modal')">&times;</button>
+      <div id="deed-modal-body">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

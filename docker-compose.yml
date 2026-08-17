@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  digital-land-platform:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: digital_land_app
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET=digital-land-registry-secret-key-2026
+      - NODE_ENV=production
+    volumes:
+      - ./data.json:/app/data.json
+      - ./uploads:/app/uploads
+    restart: always
