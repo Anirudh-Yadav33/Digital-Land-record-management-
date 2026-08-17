@@ -3,7 +3,9 @@
 A full-stack, enterprise-grade Digital Land Registry Platform built with **Node.js, Express, HTML5, CSS3 (Glassmorphism & Dark Theme), Docker, and Docker Compose**.
 
 Featuring role-based access control for Citizens and Land Registry Inspectors, automated AI boundary overlap & fraud risk scoring, digital deed certificate issuance, step-by-step property registration wizard, and a searchable public cadastral land ledger.
+## Development Branch
 
+This section was added while working on the development branch.
 ---
 
 ## 🌟 Key Features
