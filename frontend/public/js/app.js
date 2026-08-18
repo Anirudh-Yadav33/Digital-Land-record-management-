@@ -384,7 +384,6 @@ async function loadAdminData() {
 function renderAdminOverviewStats(apps, lands) {
   const pendingCount = apps.filter(a => a.status === 'PENDING').length;
   const fraudCount = apps.filter(a => a.status === 'FLAGGED_FRAUD' || (a.fraudRisk && a.fraudRisk.level === 'CRITICAL')).length;
-  const approvedCount = apps.filter(a => a.status === 'APPROVED').length;
 
   document.getElementById('stat-pending-apps').textContent = pendingCount;
   document.getElementById('stat-fraud-flags').textContent = fraudCount;
