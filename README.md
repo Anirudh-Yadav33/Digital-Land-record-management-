@@ -1,11 +1,34 @@
 # Digital Land Record and Property Registration Platform
 
-A full-stack, enterprise-grade Digital Land Registry Platform built with **Node.js, Express, HTML5, CSS3 (Glassmorphism & Dark Theme), Docker, and Docker Compose**.
+A decoupled, enterprise-grade Digital Land Registry Platform built with **Node.js, Express, HTML5, CSS3 (Glassmorphism & Dark Theme), Nginx, Docker, and Docker Compose**.
 
-Featuring role-based access control for Citizens and Land Registry Inspectors, automated AI boundary overlap & fraud risk scoring, digital deed certificate issuance, step-by-step property registration wizard, and a searchable public cadastral land ledger.
-## Development Branch
+The architecture separates the **Frontend (Port 3000)** and **Backend (Port 5000)** into dedicated microservice directories with independent `Dockerfile` configurations.
 
-This section was added while working on the development branch.
+---
+
+## 🏗️ Architecture & Decoupled Service Setup
+
+```
+Digital land/
+├── frontend/                   # Frontend Microservice Directory
+│   ├── public/                 # Static UI assets (index.html, css/style.css, js/app.js)
+│   ├── nginx.conf              # Nginx web server & reverse proxy configuration
+│   └── Dockerfile              # Docker image definition for Frontend UI (Port 3000 -> 80)
+├── backend/                    # Backend API Microservice Directory
+│   ├── server.js               # Express REST API, auth & file upload routes (Port 5000)
+│   ├── db.js                   # Persistent data store with initial seed datasets
+│   ├── fraudEngine.js          # Algorithmic fraud scoring & spatial overlap engine
+│   ├── package.json            # Node.js backend dependencies
+│   ├── uploads/                # Cadastral documents & sample title deeds
+│   └── Dockerfile              # Docker image definition for Backend API (Port 5000)
+├── docker-compose.yml          # Container orchestration for dual services
+└── README.md                   # System documentation
+```
+
+### Port Allocation:
+- **Frontend Service**: Runs on **`http://localhost:3000`** (Nginx container serving static UI and proxying API traffic).
+- **Backend Service**: Runs on **`http://localhost:5000`** (Express REST API handling auth, ledger search, and fraud checks).
+
 ---
 
 ## 🌟 Key Features
@@ -26,8 +49,6 @@ This section was added while working on the development branch.
 
 ## 🔑 Pre-Seeded Login Credentials
 
-The platform comes pre-seeded with sample user accounts and land records for instant demonstration:
-
 | Role | Email | Password | Details |
 | :--- | :--- | :--- | :--- |
 | **Citizen** | `user@land.gov` | `password123` | Rajesh Kumar (Owns GREEN VALLEY Plot #42) |
@@ -38,47 +59,44 @@ The platform comes pre-seeded with sample user accounts and land records for ins
 
 ---
 
-## 🚀 How to Run Locally
+## 🚀 How to Run with Docker & Docker Compose
 
-### Option 1: Running with Node.js directly
-
+### 1. Build and Run Both Services via Docker Compose
 ```bash
-# 1. Install dependencies
-npm install
-
-# 2. Start the server
-npm start
-```
-Open your browser and navigate to: **`http://localhost:3000`**
-
----
-
-### Option 2: Running with Docker & Docker Compose
-
-```bash
-# Launch container with single command
 docker-compose up --build
 ```
-Access the application at: **`http://localhost:3000`**
+
+### 2. Building and Running Individual Docker Images
+
+**Frontend Container (Port 3000)**:
+```bash
+# Build image
+docker build -t digital-land-frontend ./frontend
+
+# Run container
+docker run -d -p 3000:80 --name frontend_app digital-land-frontend
+```
+
+**Backend Container (Port 5000)**:
+```bash
+# Build image
+docker build -t digital-land-backend ./backend
+
+# Run container
+docker run -d -p 5000:5000 --name backend_app digital-land-backend
+```
 
 ---
 
-## 📁 Project Structure
+## 💻 How to Run Locally without Docker
 
+**Backend API**:
+```bash
+cd backend
+npm install
+npm start
 ```
-.
-├── Dockerfile                  # Container definition for Node.js server
-├── docker-compose.yml          # Container orchestration & volume mapping
-├── package.json                # Project manifest and dependencies
-├── server.js                   # Express REST API, auth & file upload routes
-├── db.js                       # Persistent data store with pre-seeded datasets
-├── fraudEngine.js              # Algorithmic fraud scoring & spatial overlap engine
-├── uploads/                    # Uploaded cadastral documents & mock deeds
-├── public/
-│   ├── index.html              # Single Page Application HTML markup
-│   ├── css/
-│   │   └── style.css           # Glassmorphism design system & responsive layout
-│   └── js/
-│       └── app.js              # Frontend SPA router, state & HTML5 map renderer
-└── README.md                   # System documentation
-```
+*Backend API will run live at `http://localhost:5000`*
+
+**Frontend UI**:
+Serve `./frontend/public` using any static web server (or access via Nginx).

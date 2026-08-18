@@ -1,7 +1,7 @@
 {
-  "name": "digital-land-registry",
+  "name": "digital-land-backend",
   "version": "1.0.0",
-  "description": "Digital Land Record and Property Registration Platform with AI/Algorithmic Fraud Audit",
+  "description": "Digital Land Record and Property Registration Platform - Backend API Service",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -18,7 +18,7 @@
     "land-registry",
     "property-registration",
     "fraud-detection",
-    "digital-governance"
+    "backend-api"
   ],
   "author": "Antigravity",
   "license": "ISC"
