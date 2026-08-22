@@ -98,16 +98,17 @@ function getInitialData() {
         deedRef: 'DEED-REG-443210',
         registrationDate: '2022-09-05',
         coordinates: [
-          { x: 300, y: 150 },
-          { x: 450, y: 150 },
-          { x: 450, y: 280 },
-          { x: 300, y: 280 }
+          { x: 300, y: 200 },
+          { x: 450, y: 200 },
+          { x: 450, y: 320 },
+          { x: 300, y: 320 }
         ],
         documents: [
-          { name: 'Deed_Of_Conveyance.pdf', type: 'Title Deed', url: '/uploads/sample_deed.pdf' }
+          { name: 'Commercial_Deed_Certificate.pdf', type: 'Title Deed', url: '/uploads/sample_deed.pdf' },
+          { name: 'Environmental_Clearance.pdf', type: 'Approval', url: '/uploads/sample_survey.pdf' }
         ],
         history: [
-          { date: '2022-09-05', event: 'Property Registered & Title Issued', actor: 'Central Registry Office' }
+          { date: '2022-09-05', event: 'Property Registered & Deed Issued', actor: 'North Hills Cadastral Officer' }
         ]
       }
     ],
@@ -121,14 +122,14 @@ function getInitialData() {
         applicantIdNumber: 'AD-9876-5432-1098',
         applicantPhone: '+1 (555) 234-5678',
         propertyTitle: 'Meadow View Plot #14',
-        district: 'South Ridge Sector',
-        sector: 'Sector 3',
+        district: 'Central Metropolitan',
+        sector: 'Sector 12',
         areaSqFt: 1800,
         zone: 'Residential',
-        proposedValuationUsd: 140000,
-        sellerName: 'Anita Verma',
-        sellerIdNumber: 'AD-7766-5544-3322',
-        previousDeedRef: 'SALE-DEED-2018-9912',
+        proposedValuationUsd: 135000,
+        sellerName: 'Anand Verma',
+        sellerIdNumber: 'AD-4433-2211-0099',
+        previousDeedRef: 'OLD-DEED-3321',
         coordinates: [
           { x: 500, y: 60 },
           { x: 620, y: 60 },
@@ -136,12 +137,18 @@ function getInitialData() {
           { x: 500, y: 160 }
         ],
         documents: [
-          { id: 'doc_1', name: 'Identity_Proof_Aadhaar.pdf', type: 'ID Proof', filename: 'sample_id.pdf' },
-          { id: 'doc_2', name: 'Sale_Deed_Agreement.pdf', type: 'Sale Deed', filename: 'sample_deed.pdf' },
-          { id: 'doc_3', name: 'Survey_Map_Plot14.pdf', type: 'Survey Map', filename: 'sample_survey.pdf' }
+          { id: 'doc_1', name: 'Citizen_ID_Rajesh.pdf', type: 'ID Proof', filename: 'sample_id.pdf', url: '/uploads/sample_id.pdf' },
+          { id: 'doc_2', name: 'Sale_Agreement_v2.pdf', type: 'Sale Deed', filename: 'sample_deed.pdf', url: '/uploads/sample_deed.pdf' },
+          { id: 'doc_3', name: 'Cadastral_Survey_Sector12.pdf', type: 'Survey Map', filename: 'sample_survey.pdf', url: '/uploads/sample_survey.pdf' }
         ],
         status: 'PENDING',
-        fraudRisk: null,
+        fraudRisk: {
+          score: 5,
+          level: 'LOW',
+          reasons: [
+            'PASSED ALL AUTOMATED CHECKS: Clear title history, valid coordinates, normal pricing, and full documentation.'
+          ]
+        },
         submittedAt: '2026-08-15T09:30:00Z',
         inspectorNotes: null,
         reviewedAt: null,
@@ -159,7 +166,7 @@ function getInitialData() {
         sector: 'Sector 7',
         areaSqFt: 2400,
         zone: 'Residential',
-        proposedValuationUsd: 35000, // Suspiciously cheap (Benchmark is ~185k)
+        proposedValuationUsd: 35000,
         sellerName: 'Suspicious Shadow Seller',
         sellerIdNumber: 'UNVERIFIED-ID',
         previousDeedRef: 'FORGED-DEED-999',
@@ -168,9 +175,9 @@ function getInitialData() {
           { x: 230, y: 90 },
           { x: 230, y: 190 },
           { x: 140, y: 190 }
-        ], // Overlaps significantly with LAND-2024-001 (x: 120..220, y: 80..180)
+        ],
         documents: [
-          { id: 'doc_fake', name: 'Single_Suspect_Scan.pdf', type: 'Sale Deed', filename: 'suspect.pdf' }
+          { id: 'doc_fake', name: 'Single_Suspect_Scan.pdf', type: 'Sale Deed', filename: 'suspect.pdf', url: '/uploads/suspect.pdf' }
         ],
         status: 'FLAGGED_FRAUD',
         fraudRisk: {

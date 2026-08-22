@@ -1,4 +1,4 @@
-# Lightweight Docker Container for Digital Land Registry Platform
+# Lightweight Docker Container for Digital Land Registry Backend API
 FROM node:20-alpine
 
 # Set working directory
@@ -10,17 +10,17 @@ COPY package*.json ./
 # Install production dependencies
 RUN npm install --only=production
 
-# Copy source code and application assets
+# Copy backend source code
 COPY . .
 
 # Create uploads directory and set permissions
 RUN mkdir -p uploads
 
-# Expose HTTP port 3000
-EXPOSE 3000
+# Expose HTTP port 5000
+EXPOSE 5000
 
 # Set environment defaults
-ENV PORT=3000
+ENV PORT=5000
 ENV NODE_ENV=production
 
 # Start application server

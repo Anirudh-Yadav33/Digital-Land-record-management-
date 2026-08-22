@@ -1,18 +1,29 @@
-version: '3.8'
-
 services:
-  digital-land-platform:
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: digital_land_app
+    image: digital-land-backend
+    container_name: digital_land_backend
     ports:
-      - "3000:3000"
+      - "5000:5000"
     environment:
-      - PORT=3000
+      - PORT=5000
       - JWT_SECRET=digital-land-registry-secret-key-2026
       - NODE_ENV=production
     volumes:
-      - ./data.json:/app/data.json
-      - ./uploads:/app/uploads
+      - ./backend/data.json:/app/data.json
+      - ./backend/uploads:/app/uploads
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: digital-land-frontend
+    container_name: digital_land_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
     restart: always
