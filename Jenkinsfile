@@ -104,28 +104,34 @@ pipeline {
         }
 
         stage('Smoke Test') {
-            steps {
-                sh '''
-                    echo "Waiting for applications..."
-                    sleep 5
+    steps {
+        sh '''
+            echo "Waiting for applications..."
+            sleep 5
 
-                    echo "Testing frontend..."
+            echo "Testing backend..."
+            BACKEND_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000)
 
-                    docker exec digital_land_frontend \
-                        wget -q -O /dev/null http://localhost/
+            echo "Backend HTTP response: $BACKEND_CODE"
 
-                    echo "Frontend smoke test passed!"
+            if [ "$BACKEND_CODE" -ge 500 ] || [ "$BACKEND_CODE" -eq 000 ]; then
+                echo "Backend smoke test failed!"
+                exit 1
+            fi
 
-                    echo "Testing backend..."
+            echo "Testing frontend..."
+            docker exec digital_land_frontend wget -q -O /dev/null http://127.0.0.1/
 
-                    docker exec digital_land_app \
-                        node -e "require('http').get('http://localhost:5000', r => { console.log('Backend HTTP:', r.statusCode); process.exit(r.statusCode >= 500 ? 1 : 0) }).on('error', () => process.exit(1))"
+            if [ $? -ne 0 ]; then
+                echo "Frontend smoke test failed!"
+                exit 1
+            fi
 
-                    echo "Backend smoke test passed!"
-                '''
-            }
-        }
+            echo "Frontend smoke test passed!"
+            echo "Smoke test passed!"
+        '''
     }
+}
 
     post {
         success {
