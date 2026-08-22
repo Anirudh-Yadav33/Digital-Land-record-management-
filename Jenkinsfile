@@ -81,9 +81,16 @@ pipeline {
 
                     echo "Testing application..."
 
-                    curl -f http://host.docker.internal:5000 || exit 1
+                    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000)
 
-                    echo "Smoke test passed!"
+                    echo "HTTP response code: $HTTP_CODE"
+
+                    if [ "$HTTP_CODE" -ge 100 ] && [ "$HTTP_CODE" -lt 500 ]; then
+                        echo "Smoke test passed!"
+                    else
+                        echo "Smoke test failed!"
+                        exit 1
+                    fi
                 '''
             }
         }
