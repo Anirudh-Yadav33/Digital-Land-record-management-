@@ -36,10 +36,8 @@ pipeline {
         stage('Build Backend Docker') {
             steps {
                 sh '''
-                    docker build \
-                      -t digital-land-record:${BUILD_NUMBER} \
-                      -f backend/Dockerfile \
-                      backend
+                    docker build -t digital-land-record:${BUILD_NUMBER} \
+                    -f backend/Dockerfile backend
                 '''
             }
         }
@@ -47,6 +45,8 @@ pipeline {
         stage('Deploy Backend') {
             steps {
                 sh '''
+                    echo "Stopping old backend..."
+
                     docker rm -f digital_land_app || true
 
                     OLD_CONTAINERS=$(docker ps -aq --filter "publish=5000")
@@ -55,12 +55,16 @@ pipeline {
                         docker rm -f $OLD_CONTAINERS
                     fi
 
+                    echo "Starting new backend..."
+
                     docker run -d \
-                      --name digital_land_app \
-                      -p 5000:5000 \
-                      -e PORT=5000 \
-                      -e NODE_ENV=production \
-                      digital-land-record:${BUILD_NUMBER}
+                        --name digital_land_app \
+                        -p 5000:5000 \
+                        -e PORT=5000 \
+                        -e NODE_ENV=production \
+                        digital-land-record:${BUILD_NUMBER}
+
+                    echo "Backend deployed successfully!"
                 '''
             }
         }
@@ -68,10 +72,8 @@ pipeline {
         stage('Build Frontend Docker') {
             steps {
                 sh '''
-                    docker build \
-                      -t digital-land-frontend:${BUILD_NUMBER} \
-                      -f frontend/Dockerfile \
-                      frontend
+                    docker build -t digital-land-frontend:${BUILD_NUMBER} \
+                    -f frontend/Dockerfile frontend
                 '''
             }
         }
@@ -92,9 +94,9 @@ pipeline {
                     echo "Starting new frontend..."
 
                     docker run -d \
-                      --name digital_land_frontend \
-                      -p 3000:80 \
-                      digital-land-frontend:${BUILD_NUMBER}
+                        --name digital_land_frontend \
+                        -p 3000:80 \
+                        digital-land-frontend:${BUILD_NUMBER}
 
                     echo "Frontend deployed successfully!"
                 '''
@@ -102,33 +104,32 @@ pipeline {
         }
 
         stage('Smoke Test') {
-    steps {
-        sh '''
-            echo "Waiting for applications..."
-            sleep 5
+            steps {
+                sh '''
+                    echo "Waiting for applications..."
+                    sleep 5
 
-            echo "Testing frontend container..."
+                    echo "Testing frontend..."
 
-            docker exec digital_land_frontend \
-                wget -q -O /dev/null http://localhost/
+                    docker exec digital_land_frontend \
+                        wget -q -O /dev/null http://localhost/
 
-            echo "Frontend smoke test passed!"
+                    echo "Frontend smoke test passed!"
 
-            echo "Testing backend container..."
+                    echo "Testing backend..."
 
-            docker exec digital_land_app \
-                node -e "require('http').get('http://localhost:5000', r => { console.log('Backend HTTP:', r.statusCode); process.exit(r.statusCode >= 500 ? 1 : 0) }).on('error', () => process.exit(1))"
+                    docker exec digital_land_app \
+                        node -e "require('http').get('http://localhost:5000', r => { console.log('Backend HTTP:', r.statusCode); process.exit(r.statusCode >= 500 ? 1 : 0) }).on('error', () => process.exit(1))"
 
-            echo "Backend smoke test passed!"
-        '''
+                    echo "Backend smoke test passed!"
+                '''
+            }
+        }
     }
-}
 
     post {
         success {
             echo 'CI/CD Pipeline completed successfully!'
-            echo 'Frontend deployed at http://localhost:3000'
-            echo 'Backend deployed at http://localhost:5000'
         }
 
         failure {
