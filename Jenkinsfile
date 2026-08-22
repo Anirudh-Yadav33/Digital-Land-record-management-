@@ -36,7 +36,8 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh '''
-                    docker build -t digital-land-record:${BUILD_NUMBER} -f backend/Dockerfile backend
+                    docker build -t digital-land-record:${BUILD_NUMBER} \
+                    -f backend/Dockerfile backend
                 '''
             }
         }
@@ -44,8 +45,21 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
+                    echo "Stopping existing application..."
+
                     docker rm -f digital_land_app || true
-                    docker rm -f digital_land-backend || true
+                    docker rm -f digital_land_backend || true
+                    docker rm -f digital-land-backend || true
+
+                    echo "Removing any container using port 5000..."
+
+                    OLD_CONTAINERS=$(docker ps -aq --filter "publish=5000")
+
+                    if [ -n "$OLD_CONTAINERS" ]; then
+                        docker rm -f $OLD_CONTAINERS
+                    fi
+
+                    echo "Starting new application..."
 
                     docker run -d \
                       --name digital_land_app \
@@ -53,6 +67,8 @@ pipeline {
                       -e PORT=5000 \
                       -e NODE_ENV=production \
                       digital-land-record:${BUILD_NUMBER}
+
+                    echo "Application deployed successfully!"
                 '''
             }
         }
@@ -60,8 +76,14 @@ pipeline {
         stage('Smoke Test') {
             steps {
                 sh '''
+                    echo "Waiting for application..."
                     sleep 5
-                    curl -f http://localhost:5000 || exit 1
+
+                    echo "Testing application..."
+
+                    curl -f http://host.docker.internal:5000 || exit 1
+
+                    echo "Smoke test passed!"
                 '''
             }
         }
