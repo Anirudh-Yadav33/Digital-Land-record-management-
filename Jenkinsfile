@@ -35,7 +35,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t digital-land-record:${BUILD_NUMBER} .'
+                sh 'docker build -t digital-land-record:${BUILD_NUMBER} -f backend/Dockerfile backend'
             }
         }
 
@@ -43,10 +43,11 @@ pipeline {
             steps {
                 sh '''
                     docker rm -f digital_land_app || true
+
                     docker run -d \
                       --name digital_land_app \
-                      -p 3000:3000 \
-                      -e PORT=3000 \
+                      -p 5000:5000 \
+                      -e PORT=5000 \
                       -e NODE_ENV=production \
                       digital-land-record:${BUILD_NUMBER}
                 '''
@@ -57,7 +58,7 @@ pipeline {
             steps {
                 sh '''
                     sleep 5
-                    curl -f http://localhost:3000 || exit 1
+                    curl -f http://localhost:5000 || exit 1
                 '''
             }
         }
