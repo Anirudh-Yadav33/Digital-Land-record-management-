@@ -9,7 +9,7 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Backend Install') {
             steps {
                 dir('backend') {
                     sh 'npm install'
@@ -17,7 +17,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Backend Test') {
             steps {
                 dir('backend') {
                     sh 'node --check server.js'
@@ -25,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Code Quality') {
+        stage('Backend Audit') {
             steps {
                 dir('backend') {
                     sh 'npm audit --audit-level=high || true'
@@ -33,25 +33,21 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Build Backend Docker') {
             steps {
                 sh '''
-                    docker build -t digital-land-record:${BUILD_NUMBER} \
-                    -f backend/Dockerfile backend
+                    docker build \
+                      -t digital-land-record:${BUILD_NUMBER} \
+                      -f backend/Dockerfile \
+                      backend
                 '''
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Backend') {
             steps {
                 sh '''
-                    echo "Stopping existing application..."
-
                     docker rm -f digital_land_app || true
-                    docker rm -f digital_land_backend || true
-                    docker rm -f digital-land-backend || true
-
-                    echo "Removing any container using port 5000..."
 
                     OLD_CONTAINERS=$(docker ps -aq --filter "publish=5000")
 
@@ -59,16 +55,48 @@ pipeline {
                         docker rm -f $OLD_CONTAINERS
                     fi
 
-                    echo "Starting new application..."
-
                     docker run -d \
                       --name digital_land_app \
                       -p 5000:5000 \
                       -e PORT=5000 \
                       -e NODE_ENV=production \
                       digital-land-record:${BUILD_NUMBER}
+                '''
+            }
+        }
 
-                    echo "Application deployed successfully!"
+        stage('Build Frontend Docker') {
+            steps {
+                sh '''
+                    docker build \
+                      -t digital-land-frontend:${BUILD_NUMBER} \
+                      -f frontend/Dockerfile \
+                      frontend
+                '''
+            }
+        }
+
+        stage('Deploy Frontend') {
+            steps {
+                sh '''
+                    echo "Stopping old frontend..."
+
+                    docker rm -f digital_land_frontend || true
+
+                    OLD_FRONTEND=$(docker ps -aq --filter "publish=3000")
+
+                    if [ -n "$OLD_FRONTEND" ]; then
+                        docker rm -f $OLD_FRONTEND
+                    fi
+
+                    echo "Starting new frontend..."
+
+                    docker run -d \
+                      --name digital_land_frontend \
+                      -p 3000:80 \
+                      digital-land-frontend:${BUILD_NUMBER}
+
+                    echo "Frontend deployed successfully!"
                 '''
             }
         }
@@ -76,19 +104,32 @@ pipeline {
         stage('Smoke Test') {
             steps {
                 sh '''
-                    echo "Waiting for application..."
+                    echo "Waiting for applications..."
                     sleep 5
 
-                    echo "Testing application..."
+                    echo "Testing frontend..."
 
-                    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000)
+                    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:3000)
 
-                    echo "HTTP response code: $HTTP_CODE"
+                    echo "Frontend HTTP response: $HTTP_CODE"
 
-                    if [ "$HTTP_CODE" -ge 100 ] && [ "$HTTP_CODE" -lt 500 ]; then
-                        echo "Smoke test passed!"
+                    if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
+                        echo "Frontend smoke test passed!"
                     else
-                        echo "Smoke test failed!"
+                        echo "Frontend smoke test failed!"
+                        exit 1
+                    fi
+
+                    echo "Testing backend..."
+
+                    BACKEND_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000)
+
+                    echo "Backend HTTP response: $BACKEND_CODE"
+
+                    if [ "$BACKEND_CODE" -ge 200 ] && [ "$BACKEND_CODE" -lt 500 ]; then
+                        echo "Backend smoke test passed!"
+                    else
+                        echo "Backend smoke test failed!"
                         exit 1
                     fi
                 '''
@@ -99,6 +140,8 @@ pipeline {
     post {
         success {
             echo 'CI/CD Pipeline completed successfully!'
+            echo 'Frontend deployed at http://localhost:3000'
+            echo 'Backend deployed at http://localhost:5000'
         }
 
         failure {
