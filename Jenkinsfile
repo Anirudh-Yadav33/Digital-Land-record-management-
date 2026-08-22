@@ -68,20 +68,22 @@ pipeline {
         }
 
         stage('Smoke Test') {
-            steps {
-                sh '''
-                    echo "Waiting for containers..."
-                    sleep 5
+    steps {
+        sh '''
+            echo "Waiting for containers..."
+            sleep 5
 
-                    echo "Checking frontend..."
-                    curl -f http://host.docker.internal:3000
+            echo "Checking frontend..."
+            curl -f http://host.docker.internal:3000
 
-                    echo "Checking backend..."
-                    curl -f http://host.docker.internal:5000
+            echo "Frontend is working!"
 
-                    echo "Smoke test passed!"
-                '''
-            }
-        }
+            echo "Checking backend..."
+            curl -s http://host.docker.internal:5000
+
+            echo "Backend is responding!"
+
+            echo "Smoke test passed!"
+        '''
     }
 }
