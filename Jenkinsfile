@@ -11,19 +11,25 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                dir('backend') {
+                    sh 'npm install'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'node --check server.js'
+                dir('backend') {
+                    sh 'node --check server.js'
+                }
             }
         }
 
         stage('Code Quality') {
             steps {
-                sh 'npm audit --audit-level=high || true'
+                dir('backend') {
+                    sh 'npm audit --audit-level=high || true'
+                }
             }
         }
 
