@@ -35,7 +35,9 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t digital-land-record:${BUILD_NUMBER} -f backend/Dockerfile backend'
+                sh '''
+                    docker build -t digital-land-record:${BUILD_NUMBER} -f backend/Dockerfile backend
+                '''
             }
         }
 
@@ -43,6 +45,7 @@ pipeline {
             steps {
                 sh '''
                     docker rm -f digital_land_app || true
+                    docker rm -f digital_land-backend || true
 
                     docker run -d \
                       --name digital_land_app \
